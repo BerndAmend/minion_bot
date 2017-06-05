@@ -1,0 +1,14 @@
+[Unit]
+Description=minion_bot
+#After=network-online.target
+#Requires=network-online.target
+
+[Service]
+WorkingDirectory=/home/pi/minion_bot/
+ExecStart=/usr/bin/python3 minion_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+
