@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import configparser
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, BaseFilter
 import logging
@@ -42,12 +43,20 @@ class RPICamera:
         self.cam.start_preview()
     def capture(self, filename):
         self.cam.capture(filename)
+    def start_recording(self, filename):
+        self.cam.start_recording(filename)
+    def wait_recording(self, duration):
+        self.cam.wait_recording(duration)
+    def stop_recording(self):
+        self.cam.stop_recording()
+    def change_resolution(self, width, height):
+        self.cam.resolution = (width, height)
 
 picamera = None
 
 def uptime():
     with open('/proc/uptime', 'r') as f:
-        return str(timedelta(seconds = float(f.readline().split()[0])))
+        return timedelta(seconds = float(f.readline().split()[0]))
 
 def start(bot, update):
     logger.info('Start "%s" \n' % update)
@@ -55,16 +64,41 @@ def start(bot, update):
 
 def echo(bot, update):
     logger.info('Received "%s"\n' % update)
-    if update.message.text.lower() == 'show':
+    if update.message.text.lower() == 'hey dude':
+        update.message.reply_text("Wassup?")
+    elif update.message.text.lower() == 'show me':
         if picamera is not None:
+            picmera.change_resolution(2592, 1944)
             picamera.capture('/tmp/image.jpg')
             bot.sendPhoto(chat_id=update.message.chat.id, photo=open('/tmp/image.jpg', 'rb'))
         else:
-            update.message.reply_text("RPiCamera is disabled")
-    elif update.message.text.lower() == 'up':
-        update.message.reply_text(uptime())
+            update.message.reply_text("Got no PiCamera, man!")
+    elif update.message.text.lower() =='move it':
+        if picamera is not None:
+            picamera.change_resolution(1920, 1080)
+            picamera.start_recording('/tmp/video.h264')
+            picamera.wait_recording(5)
+            picamera.stop_recording()
+            os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
+            bot.sendVideo(chat_id=update.message.chat.id, video=open('/tmp/video.mp4', 'rb'))
+        else:
+            update.message.reply_text("Got no PiCamera, man!")
+    elif update.message.text.lower() == 'awake?':
+        td = uptime()
+        days = td.days
+        hours, remainder = divmod(td.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        update.message.reply_text("Yeah man, for " + str(days) + " days, " + str(hours) + " hours, and " + str(minutes) + " minutes now!")
+    elif update.message.text.lower() == 'thanks man':
+        update.message.reply_text("You got it!")
+    elif update.message.text.lower() == 'reboot dude':
+        update.message.reply_text("Gonna reboot now, dog!")
+        os.system("sudo shutdown -r now")
+    elif update.message.text.lower() == 'go to sleep':
+        update.message.reply_text("Alright, good night, man!")
+        os.system("sudo shutdown now")
     else:
-        update.message.reply_text("I don't understand")
+        update.message.reply_text("What ya sayin', dog?")
 
 def error(bot, update, error):
     logger.warn('Update "%s" caused error "%s"' % (update, error))
