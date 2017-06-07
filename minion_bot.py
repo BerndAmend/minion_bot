@@ -8,6 +8,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, BaseF
 import logging
 from datetime import timedelta
 from os.path import expanduser
+from pygame import mixer
 
 class NotInstalled(object):
     def __init__(self, name):
@@ -54,6 +55,18 @@ class RPICamera:
 
 picamera = None
 
+class SoundCannon:
+    def __init__(self):
+        self.mixer = mixer
+        self.mixer.init()
+        self.mixer.music.load("./SoundOfDeath.mp3")
+    def shoot(self):
+        self.mixer.music.play()
+    def stop(self):
+        self.mixer.music.stop()
+
+soundcannon = None
+
 def uptime():
     with open('/proc/uptime', 'r') as f:
         return timedelta(seconds = float(f.readline().split()[0]))
@@ -68,11 +81,11 @@ def echo(bot, update):
         update.message.reply_text("Wassup?")
     elif update.message.text.lower() == 'show me':
         if picamera is not None:
-            picmera.change_resolution(2592, 1944)
+            picamera.change_resolution(2592, 1944)
             picamera.capture('/tmp/image.jpg')
             bot.sendPhoto(chat_id=update.message.chat.id, photo=open('/tmp/image.jpg', 'rb'))
         else:
-            update.message.reply_text("Got no PiCamera, man!")
+            update.message.reply_text("Got no RPiCamera, man!")
     elif update.message.text.lower() =='move it':
         if picamera is not None:
             picamera.change_resolution(1920, 1080)
@@ -82,13 +95,19 @@ def echo(bot, update):
             os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
             bot.sendVideo(chat_id=update.message.chat.id, video=open('/tmp/video.mp4', 'rb'))
         else:
-            update.message.reply_text("Got no PiCamera, man!")
+            update.message.reply_text("Got no RPiCamera, man!")
     elif update.message.text.lower() == 'awake?':
         td = uptime()
         days = td.days
         hours, remainder = divmod(td.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         update.message.reply_text("Yeah man, for " + str(days) + " days, " + str(hours) + " hours, and " + str(minutes) + " minutes now!")
+    elif update.message.text.lower() == 'attack!':
+        soundcannon.shoot()
+        update.message.reply_text("Hell yeah, let\'s kill those motherf*****s!!!")
+    elif update.message.text.lower() == 'stop attack':
+        soundcannon.stop()
+        update.message.reply_text("Alright, he probably had enough...")
     elif update.message.text.lower() == 'thanks man':
         update.message.reply_text("You got it!")
     elif update.message.text.lower() == 'reboot dude':
@@ -105,6 +124,7 @@ def error(bot, update, error):
 
 def main():
     global picamera
+    global soundcannon
 
     home = expanduser("~")
     if not config.read('%s/.minion_bot.ini' % home):
@@ -115,6 +135,8 @@ def main():
 
     if config.getboolean('picamera', 'enable'):
         picamera = RPICamera(int(config['picamera']['width']), int(config['picamera']['height']))
+
+    soundcannon = SoundCannon()
 
     updater = Updater(token=config['telegram']['token'])
     dp = updater.dispatcher
