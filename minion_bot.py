@@ -95,12 +95,12 @@ def echo(bot, update):
             picamera.start_recording('/tmp/video.h264')
             picamera.wait_recording(5)
             picamera.stop_recording()
-            if os.path.isfile("MP4Box"):
+            if os.path.isfile("/usr/bin/MP4Box"):
                 os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
                 bot.sendVideo(chat_id=update.message.chat.id, video=open('/tmp/video.mp4', 'rb'))
             else:
-                logger.info("Cannot send video. Video converter MP$Box (gpac) is missing!")
-                update.message.reply_text("Can\' send you the video, buddy. The goddamn video converter is missing!")
+                logger.info("Cannot send video. Video converter MP4Box (gpac) is missing!")
+                update.message.reply_text("Can\'t send you the video, buddy. The goddamn video converter is missing!")
         else:
             update.message.reply_text("Got no RPiCamera, man!")
     elif update.message.text.lower() == 'awake?':
