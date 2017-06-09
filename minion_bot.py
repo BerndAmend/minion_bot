@@ -59,7 +59,10 @@ class SoundCannon:
     def __init__(self):
         self.mixer = mixer
         self.mixer.init()
-        self.mixer.music.load("./SoundOfDeath.mp3")
+        if os.path.isfile("./SoundOfDeath.mp3"):
+            self.mixer.music.load("./SoundOfDeath.mp3")
+        else:
+            logger.info("Sound file \'./SoundOfDeath.mp3\' is missing. Sound cannon is deactivated!")
     def shoot(self):
         self.mixer.music.play()
     def stop(self):
@@ -92,8 +95,12 @@ def echo(bot, update):
             picamera.start_recording('/tmp/video.h264')
             picamera.wait_recording(5)
             picamera.stop_recording()
-            os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
-            bot.sendVideo(chat_id=update.message.chat.id, video=open('/tmp/video.mp4', 'rb'))
+            if os.path.isfile("MP4Box"):
+                os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
+                bot.sendVideo(chat_id=update.message.chat.id, video=open('/tmp/video.mp4', 'rb'))
+            else:
+                logger.info("Cannot send video. Video converter MP$Box (gpac) is missing!")
+                update.message.reply_text("Can\' send you the video, buddy. The goddamn video converter is missing!")
         else:
             update.message.reply_text("Got no RPiCamera, man!")
     elif update.message.text.lower() == 'awake?':
@@ -111,7 +118,7 @@ def echo(bot, update):
     elif update.message.text.lower() == 'thanks man':
         update.message.reply_text("You got it!")
     elif update.message.text.lower() == 'reboot dude':
-        update.message.reply_text("Gonna reboot now, dog!")
+        update.message.reply_text("Gonna reboot now, pal!")
         os.system("sudo shutdown -r now")
     elif update.message.text.lower() == 'go to sleep':
         update.message.reply_text("Alright, good night, man!")
