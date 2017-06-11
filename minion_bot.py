@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import configparser
+import json
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, BaseFilter
 import logging
 import importlib
@@ -18,17 +18,17 @@ logger = logging.getLogger(__name__)
 plugins = {}
 
 class LimitToUser(BaseFilter):
-    def __init__(self, limit_to_users):
-        self.limit_to_users = [int(x) for x in limit_to_users.split(',')]
+    def __init__(self, authorized_users):
+        self.authorized_users = authorized_users
     def filter(self, message):
-        return message.from_user.id in self.limit_to_users
+        return message.from_user.id in self.authorized_users
 
 def start(bot, update):
-    logger.info('Start "%s" \n' % update)
+    logger.info('Start "%s" \n' % update.message)
     update.message.reply_text('Hi!')
 
 def handlemessage(bot, update):
-    logger.info('Received "%s"\n' % update)
+    logger.info('Received "%s"\n' % update.message)
 
     for k, v in plugins.items():
         if v.handlemessage(bot, update.message):
@@ -47,30 +47,30 @@ def error(bot, update, error):
 
 def main():
     home = expanduser("~")
-    config = configparser.ConfigParser()
-    if not config.read('%s/.minion_bot.ini' % home):
+    try:
+        config = json.load(open('%s/.minion_bot.json' % home))
+    except FileNotFoundError:
         print('move minion_bot.ini to home directory ~/.minion_bot.ini')
         sys.exit(-1)
 
-    limit_to_user = LimitToUser(config['telegram']['limit_to_users'])
+    limit_to_user = LimitToUser(config['telegram']['users'])
 
     updater = Updater(token=config['telegram']['token'])
     dp = updater.dispatcher
 
     global plugins
-    for plugin in config['plugins']:
-        if config.getboolean('plugins', plugin):
-            print('load plugin %s' % plugin)
+    for k,v in config.items():
+        if k == "telegram":
+            {}
+        elif v["enable"]:
+            print('load plugin %s' % k)
             try:
-                loadedplugin = importlib.__import__("plugins.%s" % plugin, fromlist=[plugin]).__export__
-                c = {}
-                try:
-                    c = config[plugin]
-                except KeyError:
-                    pass
-                plugins[plugin] = loadedplugin(c)
+                loadedplugin = importlib.__import__("plugins.%s" % k, fromlist=[k]).__export__
+                plugins[k] = loadedplugin(v)
             except (AttributeError, NameError):
-                print("Couldn't load plugin %s" % plugin)
+                print("Couldn't load plugin %s" % k)
+
+    print('Done')
 
     dp.add_handler(CommandHandler("start", start, limit_to_user))
     dp.add_handler(MessageHandler(Filters.text & limit_to_user, handlemessage))

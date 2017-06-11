@@ -1,0 +1,25 @@
+{
+	"telegram": {
+		"token": "",
+		"users": []
+	},
+
+	"picam": {
+		"enable": false,
+		"width": 2592,
+		"height": 1944
+	},
+
+	"fritzbox": {
+		"enable": false,
+		"address": "fritz.box",
+		"username": "",
+		"password": "",
+		"ports": []
+	},
+
+	"linux": {
+		"enable": true,
+		"allow_reboot_shutdown": true
+	}
+}

@@ -6,6 +6,7 @@ import os
 class Linux(IPlugin):
 
     def __init__(self, config):
+        self.allow_reboot_shutdown = config['allow_reboot_shutdown']
         return
 
     def handlemessage(self, bot, msg):
@@ -16,11 +17,11 @@ class Linux(IPlugin):
             minutes, seconds = divmod(remainder, 60)
             msg.reply_text("Yeah man, for " + str(days) + " days, " + str(hours) + " hours, and " + str(minutes) + " minutes now!")
             return True
-        elif msg.text.lower() == 'reboot dude':
+        elif msg.text.lower() == 'reboot dude' and self.allow_reboot_shutdown:
             msg.reply_text("Gonna reboot now, pal!")
             os.system("sudo shutdown -r now")
             return True
-        elif msg.text.lower() == 'go to sleep':
+        elif msg.text.lower() == 'go to sleep' and self.allow_reboot_shutdown:
             msg.reply_text("Alright, good night, man!")
             os.system("sudo shutdown now")
             return True
