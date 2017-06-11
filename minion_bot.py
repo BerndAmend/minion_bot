@@ -50,7 +50,7 @@ def main():
     try:
         config = json.load(open('%s/.minion_bot.json' % home))
     except FileNotFoundError:
-        print('move minion_bot.ini to home directory ~/.minion_bot.ini')
+        print('move minion_bot.json to home directory ~/.minion_bot.json')
         sys.exit(-1)
 
     limit_to_user = LimitToUser(config['telegram']['users'])

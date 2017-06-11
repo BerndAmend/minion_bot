@@ -3,13 +3,13 @@ from IPlugin import IPlugin
 import os
 
 class SoundCannon(IPlugin):
-    def __init__(self):
+    def __init__(self, config):
         self.mixer = mixer
         self.mixer.init()
-        if os.path.isfile("./SoundOfDeath.mp3"):
-            self.mixer.music.load("./SoundOfDeath.mp3")
+        if os.path.isfile(config['file']):
+            self.mixer.music.load(config['file'])
         else:
-            #logger.info("Sound file \'./SoundOfDeath.mp3\' is missing. Sound cannon is deactivated!")
+            print("Sound file \'./SoundOfDeath.mp3\' is missing. Sound cannon is deactivated!")
 
     def shoot(self):
         self.mixer.music.play()
