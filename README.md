@@ -18,7 +18,7 @@ git clone https://github.com/python-telegram-bot/python-telegram-bot --recursive
 cd python-telegram-bot
 sudo python3 setup.py install
   ```
-3) We need a coverter before we can send recorded videos to our Telegram account:
+3) We need a converter before we can send recorded videos to our Telegram account:
   ```
 sudo apt-get install gpac
   ```
