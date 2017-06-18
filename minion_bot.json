@@ -7,7 +7,8 @@
 	"picam": {
 		"enable": true,
 		"width": 2592,
-		"height": 1944
+		"height": 1944,
+                "framerate": 10
 	},
 
 	"fritzbox": {

@@ -1,14 +1,23 @@
 from picamera import PiCamera
 from IPlugin import IPlugin
+from threading import Thread
 import os
 
 class RPICamera(IPlugin):
     def __init__(self, config):
         width = int(config['width'])
         height = int(config['height'])
+        framerate = int(config['framerate'])
         self.cam = PiCamera()
         self.cam.resolution = (width, height)
+        self.cam.framerate = framerate
         self.cam.start_preview()
+
+    def start_motiondet(self):
+        t = Thread(target=self.update)
+        t.daemon = True
+        t.start()
+        return self
 
     def capture(self, filename):
         self.cam.capture(filename)
@@ -32,12 +41,13 @@ class RPICamera(IPlugin):
             bot.sendPhoto(chat_id=msg.chat.id, photo=open('/tmp/image.jpg', 'rb'))
             return True
         elif msg.text.lower() == 'move it':
+            os.system("rm /tmp/video.h264")
             self.change_resolution(1920, 1080)
             self.start_recording('/tmp/video.h264')
             self.wait_recording(5)
             self.stop_recording()
             if os.path.isfile("/usr/bin/MP4Box"):
-                os.system("MP4Box -add /tmp/video.h264 /tmp/video.mp4")
+                os.system("MP4Box -new -fps " + str(self.cam.framerate) + " -add /tmp/video.h264 /tmp/video.mp4")
                 bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
             else:
                 #logger.info("Cannot send video. Video converter MP4Box (gpac) is missing!")
