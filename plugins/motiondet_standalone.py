@@ -6,10 +6,9 @@ import numpy as np
 
 
 def main():
-    circular_image_buffer = []
-    circular_buffer_size = 10
+    image_buffer = []
+    image_buffer_size = 30
     motion_thresh = 20
-    kernel = np.ones((5,5), np.uint8)
     min_component_size = 200
 
     camera = PiCamera()
@@ -18,48 +17,57 @@ def main():
     stream = PiRGBArray(camera, size=(1920,1080))
     time.sleep(1)
 
+    background = np.zeros((1080,1920,1), dtype="uint8")
+
     # Read frames
     for frame in camera.capture_continuous(stream, format="bgr", use_video_port=True):
 
+        start = time.clock()
+
         # Original image
         image = cv2.cvtColor(frame.array, cv2.COLOR_RGB2GRAY)
-      
+        
+        # add image to circular image buffer
+        image_buffer.append(image)
+        if len(image_buffer) > image_buffer_size:
+            image_buffer.pop(0)
+
         motion_areas = []
-        if len(circular_image_buffer) > 5:
-            background = np.median(circular_image_buffer, axis=0)
-            #background = np.float32(circular_image_buffer[0])
-            #for img in circular_image_buffer:
-            #    cv2.accumulateWeighted(img, background, 0.1)
-            backgroundScaled = cv2.convertScaleAbs(background)
-            diff_image = cv2.absdiff(image, backgroundScaled)
+        if (len(image_buffer) == image_buffer_size):
+            diff_image = cv2.absdiff(image, background)
             ret, thresh_image = cv2.threshold(diff_image, motion_thresh, 255, cv2.THRESH_BINARY)
-            closing = cv2.morphologyEx(thresh_image, cv2.MORPH_CLOSE, kernel)
-            opening = cv2.morphologyEx(closing, cv2.MORPH_OPEN, kernel)
-            #cv2.imshow('background', backgroundScaled)
-            #cv2.imshow('motion image', opening)
-            contour_image, contours, hierarchy = cv2.findContours(opening, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            #cv2.imshow('difference image', thresh_image)
+            contour_image, contours, hierarchy = cv2.findContours(thresh_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for contour in contours:
                 if cv2.contourArea(contour) > min_component_size:
                     motion_areas.append(contour)
-            
-        
-        # update circular image buffer
-        circular_image_buffer.append(image)
-        if len(circular_image_buffer) > circular_buffer_size:
-            circular_image_buffer.pop(0)
-
+       
         # react to detected motion, if necessary
         if len(motion_areas) > 0:
             print("motion detected")
-         
-        drawImage = cv2.cvtColor(image.copy(), cv2.COLOR_GRAY2RGB) 
+            for motion_area in motion_areas:
+                x,y,w,h = cv2.boundingRect(motion_area)
+                cv2.rectangle(image, (x,y), (x+w,y+h), (0,0,255), 2)
+            # replace image in circular image buffer
+            #cv2.imshow('motion image', image)
+            image_buffer[-1] = image
+        else:
+	    # update background using floating average
+            background = cv2.addWeighted(image, 0.1, background, 0.9, 0)
+            #cv2.imshow('background', background)
+	  
+        # use this if you want to visualize the found motion in color
+        #drawImage = cv2.cvtColor(image.copy(), cv2.COLOR_GRAY2RGB) 
         #cv2.drawContours(drawImage, motion_areas, -1, (0, 0, 255), cv2.FILLED) 
-        for motion_area in motion_areas:
-            x,y,w,h = cv2.boundingRect(motion_area)
-            cv2.rectangle(drawImage, (x,y), (x+w,y+h), (0,0,255), 2)
+        #for motion_area in motion_areas:
+        #    x,y,w,h = cv2.boundingRect(motion_area)
+        #    cv2.rectangle(drawImage, (x,y), (x+w,y+h), (0,0,255), 2)
 
         # Show computed image
-        cv2.imshow('current image',drawImage)
+        #cv2.imshow('current image',drawImage)
+
+        end = time.clock()
+        print(end-start)
         
         stream.truncate(0)
 
