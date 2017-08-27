@@ -18,7 +18,7 @@ class SoundCannon(IPlugin):
         self.mixer.music.stop()
 
     def handlemessage(self, bot, msg):
-        if msg.text.lower() == 'attack!':
+        if msg.text.lower() == 'attack':
             self.shoot()
             msg.reply_text("Hell yeah, let\'s kill those motherf*****s!!!")
             return True
