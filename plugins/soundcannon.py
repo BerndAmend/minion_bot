@@ -4,15 +4,16 @@ import os
 
 class SoundCannon(IPlugin):
     def __init__(self, config):
+        filepath = config['file']
         self.mixer = mixer
         self.mixer.init()
-        if os.path.isfile(config['file']):
-            self.mixer.music.load(config['file'])
+        if os.path.isfile(filepath):
+            self.mixer.music.load(filepath)
         else:
-            print("Sound file \'./SoundOfDeath.mp3\' is missing. Sound cannon is deactivated!")
+            print("Sound file \'%s\' is missing. Sound cannon is deactivated!" % (filepath))
 
     def shoot(self):
-        self.mixer.music.play()
+        self.mixer.music.play(-1)
 
     def stop(self):
         self.mixer.music.stop()

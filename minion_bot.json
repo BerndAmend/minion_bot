@@ -26,6 +26,6 @@
 
         "soundcannon": {
                 "enable": true,
-                "file": "/home/pi/minion_bot/SoundOfDeath.mp3"
+                "file": "/home/pi/minion_bot/plugins/MinionBotSoundCannon.mp3"
         }
 }
