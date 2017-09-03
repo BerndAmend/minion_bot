@@ -138,25 +138,29 @@ class RPICamera(IPlugin):
                 background = image.copy()
 
             # detect motion as soon as image buffer is filled
-            motion_areas = []
+            m,n = image.shape
+            pointUL = (n, m) # we expect one moving object only...
+            pointLR = (0, 0) # ...so we combine all detections to one motion region represented by upper left and lower right point
+            found = False
             if (len(image_buffer) == image_buffer_size):
                 diff_image = cv2.absdiff(image, background)
                 ret, thresh_image = cv2.threshold(diff_image, motion_thresh, 255, cv2.THRESH_BINARY)
                 contour_image, contours, hierarchy = cv2.findContours(thresh_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 for contour in contours:
                     if cv2.contourArea(contour) > min_component_size:
-                        motion_areas.append(contour)
+                        found = True
+                        x,y,w,h = cv2.boundingRect(contour)
+                        pointUL = (min(pointUL[0], x), min(pointUL[1], y))
+                        pointLR = (max(pointLR[0], x+w), max(pointLR[1], y+h))
        
             # react to detected motion, if necessary
-            if len(motion_areas) > 0:
+            if found:
                 # draw detected motion into last frame of image buffer
-                for motion_area in motion_areas:
-                    x,y,w,h = cv2.boundingRect(motion_area)
-                    # extend upper left and lower right point of rectangle to have better view towards the moving object
-                    pointUL = (max(0, resize_factor*(x-2)), max(0, resize_factor*(y-2)))
-                    pointLR = (min(self.cam.resolution.width-1, resize_factor*(x+w+2)), min(self.cam.resolution.height-1, resize_factor*(y+h+2)))
-                    # image_buffer[-1] refers to the last index in the array image_buffer
-                    cv2.rectangle(image_buffer[-1], pointUL, pointLR, (0,0,255), 4)
+                # extend upper left and lower right point of rectangle to have better view towards the moving object
+                pointLargeUL = (max(0, resize_factor*(pointUL[0]-2)), max(0, resize_factor*(pointUL[1]-2)))
+                pointLargeLR = (min(self.cam.resolution.width-1, resize_factor*(pointLR[0]+2)), min(self.cam.resolution.height-1, resize_factor*(pointLR[1]+2)))
+                # image_buffer[-1] refers to the last index in the array image_buffer
+                cv2.rectangle(image_buffer[-1], pointLargeUL, pointLargeLR, (0,0,255), 4)
                         
                 # increment motion alarm counter as we want to avoid alarm polling          
                 motion_alarm_counter += 1
