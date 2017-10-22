@@ -1,5 +1,5 @@
 # Minion Bot
-The ultimate surveillance eye for your Raspberry Pi!
+The ultimate surveillance eye for your beloved Raspberry Pi!
 
 # Instructions
 0) Be a good guy and update everything:
@@ -22,9 +22,15 @@ sudo python3 setup.py install
   ```
 sudo apt-get install gpac
   ```
-4) We save some time and install a precompiled version of OpenCV:
+4) If we use Raspbian Jessie, we can save some time and install a precompiled version of OpenCV:
 
 [Get precompiled OpenCV!](https://github.com/jabelone/OpenCV-for-Pi)
+
+Otherwise, you have to compile OpenCV by yourself, unfortunately. We run our code using OpenCV 3.1.0.
+
+[Get OpenCV source code!](https://opencv.org/releases.html)
+
+You even can skip the installation of OpenCV and continue, but then you cannot use our cool motion detection algorithm.
 
 5) Copy minion_bot.json file to /home/pi/ directory and adapt it to your needs:
   ```

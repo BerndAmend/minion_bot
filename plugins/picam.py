@@ -2,10 +2,18 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 from IPlugin import IPlugin
 from threading import Thread
-import cv2
 import numpy as np
 import os
 import time
+
+# since we do not want to assume the existence of OpenCV module, we import it optionally
+global has_opencv
+try:
+    import cv2123
+    has_opencv = True
+except ImportError:
+    print("OpenCV is missing, so motion detection cannot be used")
+    has_opencv = False
 
 class RPICamera(IPlugin):
     def __init__(self, config):
@@ -15,7 +23,6 @@ class RPICamera(IPlugin):
         self.cam = PiCamera()
         self.cam.resolution = (width, height)
         self.cam.framerate = framerate
-        #self.cam.start_preview()
         # this member is used to stop the motion detection thread
         self.motiondet_thread_running = False
 
@@ -54,10 +61,16 @@ class RPICamera(IPlugin):
 
     def handlemessage(self, bot, msg):
         if msg.text.lower() == 'activate':
-            self.start_motiondet_thread(bot, msg, False)
+            if has_opencv:
+                self.start_motiondet_thread(bot, msg, False)
+            else:
+                msg.reply_text("Without OpenCV you cannot ask for motion detection, loser!")
             return True
         if msg.text.lower() == 'deactivate':
-            self.stop_motiondet_thread(bot, msg)
+            if self.motiondet_thread_running:
+                self.stop_motiondet_thread(bot, msg)
+            else:
+                msg.reply_text("Hey, watcha doin'? Motion detection was not active, so I gonna do nothin'!")
             return True
         if msg.text.lower() == 'show me':
             # save current state as member motiondet_thread_running is overwritten in stop_motiondet_thread()

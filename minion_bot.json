@@ -26,6 +26,6 @@
 
         "soundcannon": {
                 "enable": true,
-                "file": "/home/pi/minion_bot/plugins/minion_bot_siren.mp3"
+                "file": "/home/pi/minion_bot/data/minion_bot_siren.mp3"
         }
 }
