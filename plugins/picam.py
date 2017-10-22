@@ -9,7 +9,7 @@ import time
 # since we do not want to assume the existence of OpenCV module, we import it optionally
 global has_opencv
 try:
-    import cv2123
+    import cv2
     has_opencv = True
 except ImportError:
     print("OpenCV is missing, so motion detection cannot be used")
