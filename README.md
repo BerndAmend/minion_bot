@@ -50,4 +50,8 @@ systemctl --user enable minion_bot.service
   ```
 systemctl --user start minion_bot.service
   ```
-8) Ask your bot about what you can ask him via the command 'So what?'  and have fun!
+8) Enable linger
+  ```
+sudo loginctl enable-linger <username>
+  ```
+9) Ask your bot about what you can ask him via the command 'So what?'  and have fun!
