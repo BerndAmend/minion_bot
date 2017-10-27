@@ -9,7 +9,7 @@ sudo apt-get upgrade
 sudo rpi-update
   ```
 1) Install additional dependencies
-python-picamera
+on arch python-picamera python-numpy opencv
   
 2) Install Telegram on your mobile device and create your very first bot referring to your good friend the 'BotFather':
 
