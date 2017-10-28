@@ -20,7 +20,11 @@ class LimitToUser(BaseFilter):
     def __init__(self, authorized_users):
         self.authorized_users = authorized_users
     def filter(self, message):
-        return message.from_user.id in self.authorized_users
+        if message.from_user.id in self.authorized_users:
+            return True
+        else:
+            logger.info("Ignored message from unauthorized user %s" % message)
+            return False
 
 def start(bot, update):
     logger.info('Start "%s" \n' % update.message)
