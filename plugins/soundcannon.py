@@ -29,4 +29,8 @@ class SoundCannon(IPlugin):
             return True
         return False
 
+    def helpmessage(self):
+        return {"attack": "start sound cannon",
+                "stop attack": "stop sound cannon"}
+
 __export__ = SoundCannon

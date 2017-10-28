@@ -5,3 +5,6 @@ class IPlugin:
 
     def handlemessage(self, bot, msg):
         return False
+
+    def helpmessage(self):
+        return {}

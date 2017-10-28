@@ -216,5 +216,10 @@ class RPICamera(IPlugin):
         # give feedback to the user that motion detection is stopped
         msg.reply_text("Motion detection stopped!")
 
+    def helpmessage(self):
+        return {"show me": "get single image",
+                "move it": "get video",
+                "activate": "start motion detection",
+                "deactivate": "stop motion detection"}
 
 __export__ = RPICamera

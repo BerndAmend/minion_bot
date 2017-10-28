@@ -14,22 +14,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-# Help text for dialog system 
-helptext  = "'so what?' - available commands\n\n"
-helptext += "'hey dude' - say hi to your Pi\n\n"
-helptext += "'how are you?' - ask Pi for his mood\n\n"
-helptext += "'thanks man' - thank Pi for his effort\n\n"
-helptext += "'awake?' - ask Pi for his uptime\n\n"
-helptext += "'show me' - get single image\n\n"
-helptext += "'move it' - get video\n\n"
-helptext += "'activate' - start motion detection\n\n"
-helptext += "'deactivate' - stop motion detection\n\n"
-helptext += "'attack' - start sound cannon\n\n"
-helptext += "'stop attack' - stop sound cannon\n\n"
-helptext += "'reboot dude' - make Pi reboot\n\n"
-helptext += "'go to sleep' - make Pi shut down\n\n"
-
-
 plugins = {}
 
 class LimitToUser(BaseFilter):
@@ -50,14 +34,17 @@ def handlemessage(bot, update):
             print("Message handled by %s" % k)
             return
 
-    if update.message.text.lower() == 'hey dude':
-        update.message.reply_text("Wassup?")
-    elif update.message.text.lower() == 'so what?':
+    if update.message.text.lower() == 'so what?':
+        helpdict = {"so what?": "available commands"}
+
+        for k, v in plugins.items():
+            helpdict.update(v.helpmessage())
+
+        helptext = ""
+        for k, v in helpdict.items():
+            helptext += "'" + k + "' - " + v + "\n"
+
         update.message.reply_text(helptext)
-    elif update.message.text.lower() == 'how are you?':
-        update.message.reply_text("Kinda bored, man!")
-    elif update.message.text.lower() == 'thanks man':
-        update.message.reply_text("You got it!")
     else:
         update.message.reply_text("What ya sayin', dog?")
 

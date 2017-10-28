@@ -32,4 +32,9 @@ class Linux(IPlugin):
         with open('/proc/uptime', 'r') as f:
             return timedelta(seconds=float(f.readline().split()[0]))
 
+    def helpmessage(self):
+        return {"awake?": "ask Pi for his uptime",
+                "reboot dude": "make Pi reboot",
+                "go to sleep": "make Pi shut down"}
+
 __export__ = Linux
