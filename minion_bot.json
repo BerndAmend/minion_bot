@@ -1,31 +1,39 @@
 {
-	"telegram": {
-		"token": "",
-		"users": []
-	},
+    "telegram": {
+        "token": "",
+        "users": []
+    },
 
-	"picam": {
-		"enable": true,
-		"width": 2592,
-		"height": 1944,
-                "framerate": 10
-	},
+    "picam": {
+        "enable": true,
+        "width": 2592,
+        "height": 1944,
+        "framerate": 10
+    },
 
-	"fritzbox": {
-		"enable": false,
-		"address": "fritz.box",
-		"username": "",
-		"password": "",
-		"ports": []
-	},
+    "fritzbox": {
+        "enable": false,
+        "address": "fritz.box",
+        "username": "",
+        "password": "",
+        "ports": []
+    },
 
-	"linux": {
-		"enable": true,
-		"allow_reboot_shutdown": true
-	},
+    "linux": {
+        "enable": true,
+        "allow_reboot_shutdown": true
+    },
 
-        "soundcannon": {
-                "enable": true,
-                "file": "/home/pi/minion_bot/data/minion_bot_siren.mp3"
-        }
+    "soundcannon": {
+        "enable": true,
+        "file": "~/minion_bot/data/minion_bot_siren.mp3"
+    },
+
+    "smalltalk": {
+        "enable": true
+    },
+
+    "updater": {
+        "enable": true
+    }
 }
