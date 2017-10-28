@@ -35,7 +35,7 @@ def handlemessage(bot, update):
 
     for k, v in plugins.items():
         if v.handlemessage(bot, update.message):
-            print("Message handled by %s" % k)
+            logger.info("Message handled by %s" % k)
             return
 
     if update.message.text.lower() == 'so what?':
