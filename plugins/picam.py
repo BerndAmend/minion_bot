@@ -6,7 +6,7 @@ import numpy as np
 import os
 import time
 
-# since we do not want to assume the existence of OpenCV module, we import it optionally
+# since we do not want to be dependent on the OpenCV module, we import it optionally
 global has_opencv
 try:
     import cv2
@@ -42,7 +42,6 @@ class RPICamera(IPlugin):
         self.cam.resolution = (width, height)
         
     def start_motiondet_thread(self, bot, msg, restart_flag):
-        t = Thread(target=self.detect_motion, args=(bot, msg,))
         if restart_flag == False:
             msg.reply_text("Start motion detection in:")
             for i in range(0,3):
@@ -53,6 +52,7 @@ class RPICamera(IPlugin):
         time.sleep(1)
         msg.reply_text("NOW I GONNA KILL EVERYBODY!")
         self.motiondet_thread_running = True
+        t = Thread(target=self.detect_motion, args=(bot,msg,))
         t.start()
 
     def stop_motiondet_thread(self, bot, msg):
@@ -62,7 +62,10 @@ class RPICamera(IPlugin):
     def handlemessage(self, bot, msg):
         if msg.text.lower() == 'activate':
             if has_opencv:
-                self.start_motiondet_thread(bot, msg, False)
+                if self.motiondet_thread_running:
+                    msg.reply_text("Motion detection is already running, man!")
+                else:
+                    self.start_motiondet_thread(bot, msg, False)
             else:
                 msg.reply_text("Without OpenCV you cannot ask for motion detection, loser!")
             return True

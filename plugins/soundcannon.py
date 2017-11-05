@@ -7,8 +7,8 @@ class SoundCannon(IPlugin):
         filepath = config['file']
         self.mixer = mixer
         self.mixer.init()
-        if os.path.isfile(filepath):
-            self.mixer.music.load(filepath)
+        if os.path.isfile(os.path.expanduser(filepath)):
+            self.mixer.music.load(os.path.expanduser(filepath))
         else:
             print("Sound file \'%s\' is missing. Sound cannon is deactivated!" % (filepath))
 
