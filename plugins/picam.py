@@ -16,7 +16,7 @@ except ImportError:
     has_opencv = False
 
 class RPICamera(IPlugin):
-    def __init__(self, config):
+    def __init__(self, config, dispatcher):
         width = int(config['width'])
         height = int(config['height'])
         framerate = int(config['framerate'])

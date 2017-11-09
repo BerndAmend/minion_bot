@@ -18,7 +18,7 @@ class SmallTalk(IPlugin):
             elif r <= 0.9:
                 msg.reply_text("Fuck off!")
             else:
-                msg.reply_text("I can't take it anymore! I just want to die!")
+                msg.reply_text("Everything is fine.")
         elif msg.text.lower() == 'thanks man':
             msg.reply_text("You got it!")
         else:

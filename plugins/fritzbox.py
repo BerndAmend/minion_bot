@@ -6,7 +6,7 @@ from IPlugin import IPlugin
 # add proper error handling
 class FritzBox(IPlugin):
 
-    def __init__(self, config):
+    def __init__(self, config, dispatcher):
         self.config = config
         self.address = config['address']
         self.authenticate(config['username'], config['password'])

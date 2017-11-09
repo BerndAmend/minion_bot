@@ -76,7 +76,7 @@ def main():
             print('load plugin %s' % k)
             try:
                 loadedplugin = importlib.__import__("plugins.%s" % k, fromlist=[k]).__export__
-                plugins[k] = loadedplugin(v)
+                plugins[k] = loadedplugin(v, dp)
             except (ModuleNotFoundError, AttributeError, NameError):
                 print("Couldn't load plugin %s" % k)
 

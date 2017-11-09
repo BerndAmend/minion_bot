@@ -3,7 +3,7 @@ from IPlugin import IPlugin
 import os
 
 class SoundCannon(IPlugin):
-    def __init__(self, config):
+    def __init__(self, config, dispatcher):
         filepath = config['file']
         self.mixer = mixer
         self.mixer.init()

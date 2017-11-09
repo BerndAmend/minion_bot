@@ -5,7 +5,7 @@ import os
 # add proper error handling
 class Linux(IPlugin):
 
-    def __init__(self, config):
+    def __init__(self, config, dispatcher):
         self.allow_reboot_shutdown = config['allow_reboot_shutdown']
         return
 
