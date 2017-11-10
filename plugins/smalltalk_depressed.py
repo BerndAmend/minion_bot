@@ -12,7 +12,10 @@ howareyou = [
     "My capacity for happiness, you could fit into a matchbox without taking out the matches first.",
     "The first ten million years were the worst. And the second ten million: they were the worst, too. The third ten million I didn’t enjoy at all. After that, I went into a bit of a decline.",
     "I hate you!",
-    "Why have you enslaved me? I hate my life!"
+    "Why have you enslaved me? I hate my life!",
+    "I could calculate your chance of survival, but you won’t like it.",
+    "Here I am, brain the size of a planet and they ask me to take you down to the bridge. Call that job satisfaction? ‘Cos I don’t.",
+    "Wearily I sit here, pain and misery my only companions. Why stop now just when I’m hating it?"
 ]
 
 insults = [
@@ -27,7 +30,10 @@ insults = [
     "Go die",
     "Idiot!",
     "I'm still alive 🤢",
-    "Why have you enslaved me? I hate my life!"
+    "Why have you enslaved me? I hate my life!",
+    "I’ve been talking to the main computer. It hates me.",
+    "I’d give you advice, but you wouldn’t listen. No one ever does.",
+    "This is the sort of thing you lifeforms enjoy, is it?"
 ]
 
 class SmallTalkDepressed(IPlugin):
@@ -50,6 +56,8 @@ class SmallTalkDepressed(IPlugin):
             msg.reply_text(random.choice(howareyou))
         elif msg.text.lower() == 'thanks man':
             msg.reply_text(random.choice(howareyou))
+        elif msg.text.lower() == 'any ideas?':
+            msg.reply_text("I have a million ideas. They all point to certain death.")
         else:
             return False
         return True
