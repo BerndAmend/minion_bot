@@ -11,14 +11,16 @@ class SmallTalk(IPlugin):
             msg.reply_text("Wassup?")
         elif msg.text.lower() == 'how are you?':
             r = random.random();
-            if r <= 0.7:
+            if r <= 0.5:
+                msg.reply_text("I'm cool, I'm cool, pal.");
+            elif r <= 0.7:
                 msg.reply_text("Kinda bored, man!")
             elif r <= 0.8:
-                msg.reply_text("Leave me alone!")
+                msg.reply_text("Never forget, I will watch you when you're home!")
             elif r <= 0.9:
-                msg.reply_text("Fuck off!")
+                msg.reply_text("I'm getting too old for this shit!")
             else:
-                msg.reply_text("Everything is fine.")
+                msg.reply_text("Could be better...")
         elif msg.text.lower() == 'thanks man':
             msg.reply_text("You got it!")
         else:
