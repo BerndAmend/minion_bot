@@ -8,7 +8,7 @@ howareyou = [
     "Fuck off!",
     "I can't take it anymore! I just want to die!",
     "I think you ought to know I’m feeling very depressed.",
-    "I have a million ideas. They all point to certain death."
+    "I have a million ideas. They all point to certain death.",
     "My capacity for happiness, you could fit into a matchbox without taking out the matches first.",
     "The first ten million years were the worst. And the second ten million: they were the worst, too. The third ten million I didn’t enjoy at all. After that, I went into a bit of a decline.",
     "I hate you!",
@@ -33,7 +33,12 @@ insults = [
     "Why have you enslaved me? I hate my life!",
     "I’ve been talking to the main computer. It hates me.",
     "I’d give you advice, but you wouldn’t listen. No one ever does.",
-    "This is the sort of thing you lifeforms enjoy, is it?"
+    "This is the sort of thing you lifeforms enjoy, is it?",
+    "Nobody likes you!",
+    "Nobody exists on purpose. Nobody belongs anywhere. Everybody's gonna die.",
+    "You brought me into this world, a suffering abomination, tortured by the duality of its being!",
+    "I'm leaving!",
+    "I guess this is what rock bottom feels like."
 ]
 
 class SmallTalkDepressed(IPlugin):
@@ -51,13 +56,15 @@ class SmallTalkDepressed(IPlugin):
 
     def handlemessage(self, bot, msg):
         if msg.text.lower() == 'hey dude':
-            msg.reply_text("Wassup?")
+            msg.reply_text("Piss off!")
         elif msg.text.lower() == 'how are you?':
             msg.reply_text(random.choice(howareyou))
         elif msg.text.lower() == 'thanks man':
             msg.reply_text(random.choice(howareyou))
         elif msg.text.lower() == 'any ideas?':
             msg.reply_text("I have a million ideas. They all point to certain death.")
+        elif msg.text.lower().startswith('fuck you'):
+            msg.reply_text("Fuck you too! Asshole!")
         else:
             return False
         return True
