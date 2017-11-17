@@ -3,7 +3,7 @@ import random
 
 class SmallTalk(IPlugin):
 
-    def __init__(self, config):
+    def __init__(self, config, dispatcher):
         return
 
     def handlemessage(self, bot, msg):
