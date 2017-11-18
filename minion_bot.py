@@ -77,7 +77,7 @@ def main():
             try:
                 loadedplugin = importlib.__import__("plugins.%s" % k, fromlist=[k]).__export__
                 plugins[k] = loadedplugin(v, dp)
-            except (ModuleNotFoundError, AttributeError, NameError):
+            except:
                 print("Couldn't load plugin %s" % k)
 
     print('Done')
