@@ -17,14 +17,15 @@ except ImportError:
 
 class RPICamera(IPlugin):
     def __init__(self, config, dispatcher):
-        width = int(config['width'])
-        height = int(config['height'])
-        framerate = int(config['framerate'])
         self.cam = PiCamera()
-        self.cam.resolution = (width, height)
-        self.cam.framerate = framerate
+        self.cam.resolution = (int(config['width']), int(config['height']))
+        self.cam.framerate = int(config['framerate'])
         # this member is used to stop the motion detection thread
         self.motiondet_thread_running = False
+        try:
+            self.record_after_motion = float(config['record_after_motion'])
+        except KeyError:
+            self.record_after_motion = 3
 
     def capture(self, filename):
         self.cam.capture(filename)
@@ -122,8 +123,8 @@ class RPICamera(IPlugin):
 
         # store images in a circular buffer
         image_buffer = []
-        image_buffer_size = 30
-        
+        image_buffer_size = int(self.cam.framerate*self.record_after_motion)
+
         # set image resize factor to achieve real-time processing (factor 1 uses original image size)
         resize_factor = 2
 
@@ -168,7 +169,7 @@ class RPICamera(IPlugin):
                         x,y,w,h = cv2.boundingRect(contour)
                         pointUL = (min(pointUL[0], x), min(pointUL[1], y))
                         pointLR = (max(pointLR[0], x+w), max(pointLR[1], y+h))
-       
+
             # react to detected motion, if necessary
             if found:
                 # draw detected motion into last frame of image buffer
