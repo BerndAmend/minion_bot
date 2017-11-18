@@ -40,7 +40,7 @@ class RPICamera(IPlugin):
 
     def change_resolution(self, width, height):
         self.cam.resolution = (width, height)
-        
+
     def start_motiondet_thread(self, bot, msg, restart_flag):
         if restart_flag == False:
             msg.reply_text("Start motion detection in:")
@@ -119,14 +119,14 @@ class RPICamera(IPlugin):
         self.cam.framerate = 10
         stream = PiRGBArray(self.cam, size=(self.cam.resolution.width, self.cam.resolution.height))
         time.sleep(1)
-        
+
         # store images in a circular buffer
         image_buffer = []
         image_buffer_size = 30
         
         # set image resize factor to achieve real-time processing (factor 1 uses original image size)
         resize_factor = 2
-        
+
         # set motion detection parameters
         motion_thresh = 20 # threshold in difference image
         min_component_size = 200 // pow(resize_factor, 2) # minimum connected component area size
@@ -136,7 +136,7 @@ class RPICamera(IPlugin):
 
         # short-term background image that is used to calculate the difference image
         background = np.zeros((self.cam.resolution.height // resize_factor, self.cam.resolution.width // resize_factor, 1), dtype="uint8")
-        
+
         # read frames
         for frame in self.cam.capture_continuous(stream, format="bgr", use_video_port=True):
 
@@ -144,11 +144,11 @@ class RPICamera(IPlugin):
             image_buffer.append(frame.array.copy())
             if len(image_buffer) > image_buffer_size:
                 image_buffer.pop(0)
-                
+
             # convert current image to gray values and resize it for real-time motion detection
             imageLarge = cv2.cvtColor(frame.array, cv2.COLOR_RGB2GRAY)
             image = cv2.resize(imageLarge, (self.cam.resolution.width // resize_factor, self.cam.resolution.height // resize_factor), interpolation = cv2.INTER_AREA)
-            
+
             # initialize background with first image
             if len(image_buffer) == 1:
                 background = image.copy()
@@ -177,45 +177,45 @@ class RPICamera(IPlugin):
                 pointLargeLR = (min(self.cam.resolution.width-1, resize_factor*(pointLR[0]+2)), min(self.cam.resolution.height-1, resize_factor*(pointLR[1]+2)))
                 # image_buffer[-1] refers to the last index in the array image_buffer
                 cv2.rectangle(image_buffer[-1], pointLargeUL, pointLargeLR, (0,0,255), 4)
-                        
-                # increment motion alarm counter as we want to avoid alarm polling          
+
+                # increment motion alarm counter as we want to avoid alarm polling
                 motion_alarm_counter += 1
-               
+
                 # motion detected for sure? then notify user and send video!
                 if motion_alarm_counter == motion_alarm_thresh:
                     # first, send alarm via message
                     msg.reply_text("Motion detected, dude!")
-                    
+
                     # then write video from single images
                     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
                     video = cv2.VideoWriter('/tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
                     for img in image_buffer:
                         video.write(img)
                     video.release()
-                    
+
                     # finally, send video to user via Telegram (this always throws a warning in the console, but it works anyway)
-                    bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))          
+                    bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
             else:
                 # reset motion alarm counter
                 motion_alarm_counter = 0
-            
+
             # update background using floating average (short-term background contains images from 20 frames)
             background = cv2.addWeighted(image, 0.05, background, 0.95, 0)
-  
+
             # reset motion alarm counter after some time (ten seconds) to enable a new alarm
             if motion_alarm_counter == motion_next_alarm_counter:
                 motion_alarm_counter = 0
-        
+
             # clear stream for next incoming image
             stream.truncate(0)
-            
+
             # stop thread if desired
             if self.motiondet_thread_running == False:
                 break
 
         # close image window and thread
         cv2.destroyAllWindows()
-        
+
         # give feedback to the user that motion detection is stopped
         msg.reply_text("Motion detection stopped!")
 
