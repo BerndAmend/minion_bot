@@ -189,7 +189,7 @@ class RPICamera(IPlugin):
 
                     # then write video from single images
                     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-                    video = cv2.VideoWriter('/tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
+                    video = cv2.VideoWriter('file:///tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
                     for img in image_buffer:
                         video.write(img)
                     video.release()
