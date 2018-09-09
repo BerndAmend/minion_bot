@@ -4,6 +4,8 @@
 import sys
 import json
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, BaseFilter
+from telegram import KeyboardButton, ReplyKeyboardMarkup
+
 import logging
 import importlib
 from os.path import expanduser
@@ -29,6 +31,13 @@ class LimitToUser(BaseFilter):
 def start(bot, update):
     logger.info('Start "%s" \n' % update.message)
     update.message.reply_text('Hi!')
+    kb = [[KeyboardButton('activate'), KeyboardButton('deactivate')],
+          [KeyboardButton('show me'), KeyboardButton('move it')]]
+    kb_markup = ReplyKeyboardMarkup(kb, resize_keyboard=True)
+
+    bot.send_message(chat_id=update.message.chat_id,
+                     text="Welcome!",
+                     reply_markup=kb_markup)
 
 def handlemessage(bot, update):
     logger.info('Received "%s"\n' % update.message)
