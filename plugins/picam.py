@@ -99,7 +99,7 @@ class RPICamera(IPlugin):
             self.stop_motiondet_thread(bot, msg)
             # record video in H.264 format
             os.system("rm /tmp/video.h264")
-            self.change_resolution(1920, 1080)
+            self.change_resolution(1920, 1088)
             self.start_recording('/tmp/video.h264')
             self.wait_recording(5)
             self.stop_recording()
@@ -117,7 +117,7 @@ class RPICamera(IPlugin):
       
     def detect_motion(self, bot, msg):
         # set camera parameters
-        self.cam.resolution = (1920,1080)
+        self.cam.resolution = (1920,1088)
         self.cam.framerate = 10
         stream = PiRGBArray(self.cam, size=(self.cam.resolution.width, self.cam.resolution.height))
         time.sleep(1)
@@ -163,7 +163,7 @@ class RPICamera(IPlugin):
             if (len(image_buffer) == image_buffer_size):
                 diff_image = cv2.absdiff(image, background)
                 ret, thresh_image = cv2.threshold(diff_image, motion_thresh, 255, cv2.THRESH_BINARY)
-                contour_image, contours, hierarchy = cv2.findContours(thresh_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                contours, hierarchy = cv2.findContours(thresh_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 for contour in contours:
                     if cv2.contourArea(contour) > min_component_size:
                         found = True
@@ -189,7 +189,7 @@ class RPICamera(IPlugin):
                     msg.reply_text("Motion detected, dude!")
 
                     # then write video from single images
-                    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+                    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                     video = cv2.VideoWriter('/tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
                     for img in image_buffer:
                         video.write(img)
