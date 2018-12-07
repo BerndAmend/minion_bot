@@ -5,6 +5,7 @@ from threading import Thread
 import numpy as np
 import os
 import time
+import sys
 
 # since we do not want to be dependent on the OpenCV module, we import it optionally
 global has_opencv
@@ -189,13 +190,16 @@ class RPICamera(IPlugin):
 
                     # then write video from single images
                     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-                    video = cv2.VideoWriter('file:///tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
+                    video = cv2.VideoWriter('/tmp/video.mp4', fourcc, self.cam.framerate, (self.cam.resolution.width, self.cam.resolution.height), True)
                     for img in image_buffer:
                         video.write(img)
                     video.release()
 
                     # finally, send video to user via Telegram (this always throws a warning in the console, but it works anyway)
-                    bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
+                    try:
+                        bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
+                    except:
+                        msg.reply_text("couldn't send file {}".format(sys.exc_info()[0]))
             else:
                 # reset motion alarm counter
                 motion_alarm_counter = 0

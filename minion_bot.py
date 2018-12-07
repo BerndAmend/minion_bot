@@ -31,6 +31,9 @@ class LimitToUser(BaseFilter):
 def start(bot, update):
     logger.info('Start "%s" \n' % update.message)
     update.message.reply_text('Hi!')
+    sendKeyboard(bot, update)
+
+def sendKeyboard(bot, update):
     kb = [[KeyboardButton('activate'), KeyboardButton('deactivate')],
           [KeyboardButton('show me'), KeyboardButton('move it')]]
     kb_markup = ReplyKeyboardMarkup(kb, resize_keyboard=True)
@@ -58,6 +61,8 @@ def handlemessage(bot, update):
             helptext += "'" + k + "' - " + v + "\n"
 
         update.message.reply_text(helptext)
+    elif update.message.text.lower() == 'keyboard':
+        sendKeyboard(bot, update)
     else:
         update.message.reply_text("What ya sayin', dog?")
 
