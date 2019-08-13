@@ -13,11 +13,12 @@ class RPICamera(IPlugin):
         self.cam = PiCamera()
         self.cam.resolution = (int(config['width']), int(config['height']))
         self.cam.framerate = int(config['framerate'])
+        self.notify_users = config['notify_users']
         # this member is used to stop the motion detection thread
         self.motiondet_thread_running = False
         # BCM GPIO-Referenen verwenden (anstelle der Pin-Nummern) und GPIO-Eingang definieren
         GPIO.setmode(GPIO.BCM)
-        self.GPIO_PIR = 4
+        self.GPIO_PIR = 17
         GPIO.setup(self.GPIO_PIR,GPIO.IN)
         print("Warten, bis PIR im Ruhezustand ist ...")
         # Schleife, bis PIR == 0 ist
@@ -100,7 +101,7 @@ class RPICamera(IPlugin):
             # convert video to mp4 format that can be played by Telegram messenger and send it
             if os.path.isfile("/usr/bin/MP4Box"):
                 os.system("MP4Box -new -fps " + str(self.cam.framerate) + " -add /tmp/video.h264 /tmp/video.mp4")
-                bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
+                bot.send_video(chat_id=msg.chat.id, video=open('/tmp/video.mp4', 'rb'))
             else:
                 msg.reply_text("Can\'t send you the video, buddy. The goddamn video converter is missing!")
             # restart motion detection thread if it was running beforehand
@@ -132,10 +133,11 @@ class RPICamera(IPlugin):
                     os.system("MP4Box -new -fps " + str(self.cam.framerate) + " -add /tmp/motion.h264 /tmp/motion.mp4")
 
                     # finally, send video to user via Telegram (this always throws a warning in the console, but it works anyway)
-                    #try:
-                    bot.sendVideo(chat_id=msg.chat.id, video=open('/tmp/motion.mp4', 'rb'))
-                    #except:
-                        #msg.reply_text("couldn't send file {}".format(sys.exc_info()[0]))
+                    for user in self.notify_users:
+                        try:
+                            bot.send_video(chat_id=user, video=open('/tmp/motion.mp4', 'rb'))
+                        except:
+                            msg.reply_text("couldn't send file {}".format(sys.exc_info()[0]))
 
                 # stop thread if desired
                 if self.motiondet_thread_running == False:
