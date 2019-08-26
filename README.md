@@ -1,44 +1,36 @@
 # Minion Bot
 The ultimate surveillance eye for your beloved Raspberry Pi!
 
-# Instructions for Raspbian
-0) Be a good guy and update everything:
-  ```
-sudo apt-get update
-sudo apt-get upgrade
-sudo rpi-update
-sudo reboot
-  ```
-1) We want to control the Pi via the Telegram API:
-  ```
-git clone https://github.com/python-telegram-bot/python-telegram-bot --recursive
-cd python-telegram-bot
-sudo python3 setup.py install
-  ```
-2) We need a converter before we can send recorded videos to our Telegram account:
-  ```
-sudo apt-get install gpac
-  ```
-3) If we use Raspbian Jessie, we can save some time and install a precompiled version of OpenCV:
+# Print the 3d parts
 
-[Get precompiled OpenCV!](https://github.com/jabelone/OpenCV-for-Pi)
+0) Generate the stl-files (optiona)
+  ```
+cd 3d\ printed\ parts
+./export-to-stl.sh
+  ```
 
-Otherwise, you have to compile OpenCV by yourself, unfortunately. We run our code using OpenCV 3.1.0.
-
-[Get OpenCV source code!](https://opencv.org/releases.html)
-
-You even can skip the installation of OpenCV and continue, but then you cannot use our cool motion detection algorithm.
+1) Print the files
+  ```
+3d\ printed\ parts/foot.stl
+3d\ printed\ parts/mount.stl
+  ```
 
 # Instructions for Arch
 
-0) Be a good guy and update everything:
+1) Install Arch Linux ARM
+   Follow the installation instructions for your Raspberry Pi
+     https://archlinuxarm.org/platforms/armv7/broadcom/raspberry-pi-2
+     https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-3
+     https://archlinuxarm.org/platforms/armv8/broadcom/raspberry-pi-4
+
+0) Ensure the system is up-to-date
   ```
 su
 pacman -Syu
 reboot
-  ```  
+  ```
 
-1) Install (optional) dependencies
+1) Install required dependencies
 ```
 su
 pacman -S python-numpy opencv hdf5 gpac wget 
@@ -65,7 +57,7 @@ TODO
 gpu_mem=128
 start_file=start_x.elf
 fixup_file=fixup_x.dat
-# optionally:
+# optionally (only works on some hardware configurations)
 disable_camera_led=1
 ```
 If you change anything reboot.
